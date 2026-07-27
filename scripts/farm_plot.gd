@@ -1,16 +1,16 @@
-extends Node2D
+extends Interactable
 class_name FarmPlot
 
 ## 농장 타일 하나의 상태 머신
 ## GRASS(잔디) -> TILLED(갈아엎음) -> PLANTED(씨뿌림) -> WATERED(물줌, 성장중) -> READY(수확가능) -> TILLED ...
+## M1: 작물 종류가 여러 개이므로 심는 시점에 GameManager.selected_crop을 저장해두고
+## 그 작물의 성장 시간/색상을 CropData에서 조회한다.
 
 enum State { GRASS, TILLED, PLANTED, WATERED, READY }
 
-const GROW_TIME: float = 15.0  # 물을 준 후 수확까지 걸리는 시간(초) - 테스트용, 나중에 조정
-const CROP_NAME: String = "순무"
-
 var state: int = State.GRASS
 var grow_timer: float = 0.0
+var planted_crop: String = ""
 
 @onready var visual: ColorRect = $Visual
 
@@ -23,7 +23,8 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	if state == State.WATERED:
 		grow_timer += delta
-		if grow_timer >= GROW_TIME:
+		var grow_time: float = CropData.SEEDS.get(planted_crop, {}).get("grow_time", 15.0)
+		if grow_timer >= grow_time:
 			state = State.READY
 			_update_visual()
 
@@ -36,9 +37,14 @@ func interact() -> String:
 			_update_visual()
 			return "밭을 갈았다."
 		State.TILLED:
+			var crop_name: String = GameManager.selected_crop
+			if not GameManager.has_seed(crop_name):
+				return "%s 씨앗이 없다. 상점에서 구매하자." % crop_name
+			GameManager.plant_seed(crop_name)
+			planted_crop = crop_name
 			state = State.PLANTED
 			_update_visual()
-			return "씨앗을 심었다."
+			return "%s 씨앗을 심었다." % crop_name
 		State.PLANTED:
 			state = State.WATERED
 			grow_timer = 0.0
@@ -49,9 +55,9 @@ func interact() -> String:
 		State.READY:
 			state = State.TILLED
 			grow_timer = 0.0
+			GameManager.add_item(planted_crop, 1)
 			_update_visual()
-			GameManager.add_item(CROP_NAME, 1)
-			return "%s 수확!" % CROP_NAME
+			return "%s 수확!" % planted_crop
 	return ""
 
 
@@ -66,4 +72,5 @@ func _update_visual() -> void:
 		State.WATERED:
 			visual.color = Color(0.32, 0.34, 0.5)
 		State.READY:
-			visual.color = Color(0.9, 0.78, 0.2)
+			var crop_color: Color = CropData.SEEDS.get(planted_crop, {}).get("color", Color(0.9, 0.78, 0.2))
+			visual.color = crop_color

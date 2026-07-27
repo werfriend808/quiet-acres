@@ -31,8 +31,11 @@ func _on_new_day(day_number: int) -> void:
 
 
 func _process(_delta: float) -> void:
-	info_label.text = "Day %d   %s\n수확물: %s" % [
+	info_label.text = "Day %d   %s   골드 %d\n선택된 씨앗: %s\n씨앗: %s\n작물: %s\n[숫자] 씨앗 선택/구매  [E] 상호작용  [상점: X 판매, ESC 닫기]" % [
 		GameManager.day,
 		GameManager.get_time_string(),
-		GameManager.get_inventory_string()
+		GameManager.gold,
+		GameManager.selected_crop,
+		GameManager.get_seed_inventory_string(),
+		GameManager.get_crop_inventory_string(),
 	]
