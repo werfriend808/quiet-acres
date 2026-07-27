@@ -23,8 +23,8 @@ position = Vector2(170, 0)
 [node name="InfoLabel" type="Label" parent="HUD"]
 offset_left = 16.0
 offset_top = 16.0
-offset_right = 560.0
-offset_bottom = 220.0
+offset_right = 620.0
+offset_bottom = 260.0
 theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 text = "Day 1"

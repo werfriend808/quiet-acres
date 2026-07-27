@@ -26,7 +26,7 @@ func _physics_process(_delta: float) -> void:
 		_try_interact()
 
 
-## 숫자키/X/ESC 등 "한 번 눌렀을 때만" 반응해야 하는 입력은 물리 프레임마다
+## 숫자키/X/ESC/K/L 등 "한 번 눌렀을 때만" 반응해야 하는 입력은 물리 프레임마다
 ## 반복 실행되는 _physics_process 대신 이벤트 기반 _unhandled_input에서 처리한다.
 func _unhandled_input(event: InputEvent) -> void:
 	if not (event is InputEventKey and event.pressed and not event.echo):
@@ -59,6 +59,19 @@ func _unhandled_input(event: InputEvent) -> void:
 
 	if shop_open and event.physical_keycode == KEY_ESCAPE:
 		shop_ui.toggle()
+		return
+
+	if event.physical_keycode == KEY_K:
+		GameManager.save_game()
+		print("게임을 저장했다.")
+		return
+
+	if event.physical_keycode == KEY_L:
+		if GameManager.load_game():
+			print("게임을 불러왔다.")
+		else:
+			print("저장된 게임이 없다.")
+		return
 
 
 func _try_interact() -> void:
