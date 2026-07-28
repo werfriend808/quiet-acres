@@ -43,6 +43,9 @@ func interact() -> String:
 			return "밭을 갈았다."
 		State.TILLED:
 			var crop_name: String = GameManager.selected_crop
+			var season_name: String = GameManager.get_season()
+			if not CropData.is_in_season(crop_name, season_name):
+				return "%s는 %s에 심을 수 없다." % [crop_name, season_name]
 			if not GameManager.has_seed(crop_name):
 				return "%s 씨앗이 없다. 상점에서 구매하자." % crop_name
 			if not GameManager.use_stamina(GameManager.STAMINA_COST_PLANT):

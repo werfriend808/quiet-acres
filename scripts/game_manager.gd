@@ -7,6 +7,7 @@ signal new_day(day_number: int)
 signal inventory_changed
 signal gold_changed
 signal stamina_changed
+signal season_changed(season_name: String)
 
 const DAY_LENGTH_SECONDS: float = 120.0  # 테스트용: 실제 2분 = 인게임 하루 (나중에 조정)
 const SAVE_PATH: String = "user://savegame.json"
@@ -16,6 +17,9 @@ const STAMINA_COST_TILL: int = 5
 const STAMINA_COST_PLANT: int = 3
 const STAMINA_COST_WATER: int = 3
 const STAMINA_COST_HARVEST: int = 2
+
+const SEASON_NAMES: Array = ["봄", "여름", "가을", "겨울"]
+const SEASON_LENGTH_DAYS: int = 7  # 계절당 인게임 7일 (테스트용, 나중에 조정)
 
 var day: int = 1
 var day_progress: float = 0.0  # 0.0 ~ 1.0
@@ -31,11 +35,24 @@ func _process(delta: float) -> void:
 	day_progress += delta / DAY_LENGTH_SECONDS
 	if day_progress >= 1.0:
 		day_progress = 0.0
+		var previous_season: String = get_season()
 		day += 1
 		stamina = MAX_STAMINA
 		stamina_changed.emit()
 		new_day.emit(day)
+		var current_season: String = get_season()
+		if current_season != previous_season:
+			season_changed.emit(current_season)
 		save_game()  # 하루가 바뀔 때 자동 저장
+
+
+func get_season() -> String:
+	var season_index: int = ((day - 1) / SEASON_LENGTH_DAYS) % SEASON_NAMES.size()
+	return SEASON_NAMES[season_index]
+
+
+func get_year() -> int:
+	return 1 + (day - 1) / (SEASON_LENGTH_DAYS * SEASON_NAMES.size())
 
 
 func add_item(item_name: String, amount: int = 1) -> void:

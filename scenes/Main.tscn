@@ -1,6 +1,6 @@
-[gd_scene load_steps=8 format=3]
+[gd_scene format=3 uid="uid://w30caa0mj3lh"]
 
-[ext_resource type="Script" path="res://scripts/main.gd" id="1"]
+[ext_resource type="Script" uid="uid://nfe1jgfn1w4v" path="res://scripts/main.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="2"]
 [ext_resource type="PackedScene" path="res://scenes/ShopNPC.tscn" id="3"]
 [ext_resource type="PackedScene" path="res://scenes/ShopUI.tscn" id="4"]
@@ -8,34 +8,42 @@
 [ext_resource type="PackedScene" path="res://scenes/VillagerTheo.tscn" id="6"]
 [ext_resource type="PackedScene" path="res://scenes/DialogueUI.tscn" id="7"]
 
-[node name="Main" type="Node2D"]
+[node name="Main" type="Node2D" unique_id=150758269]
 script = ExtResource("1")
 
-[node name="FarmGrid" type="Node2D" parent="."]
+[node name="Background" type="CanvasLayer" parent="."]
+layer = -1
 
-[node name="Player" parent="." instance=ExtResource("2")]
+[node name="BgColor" type="ColorRect" parent="Background"]
+anchor_right = 1.0
+anchor_bottom = 1.0
+color = Color(0.55, 0.78, 0.45, 1)
+
+[node name="FarmGrid" type="Node2D" parent="." unique_id=398271469]
+
+[node name="Player" parent="." unique_id=1872930784 instance=ExtResource("2")]
 position = Vector2(0, 140)
 
-[node name="ShopNPC" parent="." instance=ExtResource("3")]
+[node name="ShopNPC" parent="." unique_id=597236716 instance=ExtResource("3")]
 position = Vector2(170, 0)
 
-[node name="ShopUI" parent="." instance=ExtResource("4")]
+[node name="ShopUI" parent="." unique_id=1323622652 instance=ExtResource("4")]
 
-[node name="VillagerMina" parent="." instance=ExtResource("5")]
+[node name="VillagerMina" parent="." unique_id=322342633 instance=ExtResource("5")]
 position = Vector2(-170, 0)
 
-[node name="VillagerTheo" parent="." instance=ExtResource("6")]
+[node name="VillagerTheo" parent="." unique_id=1757459684 instance=ExtResource("6")]
 position = Vector2(0, -170)
 
-[node name="DialogueUI" parent="." instance=ExtResource("7")]
+[node name="DialogueUI" parent="." unique_id=888314974 instance=ExtResource("7")]
 
-[node name="HUD" type="CanvasLayer" parent="."]
+[node name="HUD" type="CanvasLayer" parent="." unique_id=1531471915]
 
-[node name="InfoLabel" type="Label" parent="HUD"]
+[node name="InfoLabel" type="Label" parent="HUD" unique_id=1036222500]
 offset_left = 16.0
 offset_top = 16.0
 offset_right = 620.0
 offset_bottom = 280.0
-theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_font_sizes/font_size = 18
 text = "Day 1"

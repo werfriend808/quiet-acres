@@ -12,6 +12,7 @@ func _ready() -> void:
 	visible = false
 	GameManager.gold_changed.connect(_refresh)
 	GameManager.inventory_changed.connect(_refresh)
+	GameManager.season_changed.connect(_refresh)
 	_refresh()
 
 
@@ -24,13 +25,15 @@ func toggle() -> void:
 func _refresh() -> void:
 	var lines: Array = []
 	lines.append("=== 상점 ===")
+	lines.append("현재 계절: %s (%d년차)" % [GameManager.get_season(), GameManager.get_year()])
 	lines.append("보유 골드: %d" % GameManager.gold)
 	lines.append("")
 	var seed_names: Array = CropData.SEEDS.keys()
 	for i in range(seed_names.size()):
 		var crop_name: String = seed_names[i]
 		var info: Dictionary = CropData.SEEDS[crop_name]
-		lines.append("[%d] %s 씨앗 구매 - %d 골드" % [i + 1, crop_name, info.cost])
+		var seasons_text: String = ", ".join(info.get("seasons", []))
+		lines.append("[%d] %s 씨앗 구매 - %d 골드 (재배: %s)" % [i + 1, crop_name, info.cost, seasons_text])
 	lines.append("")
 	lines.append("[X] 보유 작물 전부 판매 - %s" % GameManager.get_crop_inventory_string())
 	lines.append("[ESC] 닫기")
