@@ -1,0 +1,22 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/critter.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/tileset/tilemap_packed.png" id="2"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1"]
+atlas = ExtResource("2")
+region = Rect2(0, 160, 16, 16)
+
+[node name="Sheep" type="Node2D"]
+script = ExtResource("1")
+flock_group = "sheep"
+sound_line = "양이 음매하고 운다."
+wander_move_speed = 20.0
+wander_radius = 40.0
+idle_min_duration = 3.0
+idle_max_duration = 7.0
+
+[node name="Visual" type="Sprite2D" parent="."]
+texture_filter = 1
+scale = Vector2(2, 2)
+texture = SubResource("AtlasTexture_1")

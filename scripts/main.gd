@@ -31,11 +31,27 @@ func _build_farm_grid() -> void:
 		-float(GRID_SIZE * TILE_SIZE) / 2.0,
 		-float(GRID_SIZE * TILE_SIZE) / 2.0
 	)
+	# 나중에 상하좌우 이웃을 연결해줘야 하므로 [row][col] 2차원 배열로도 따로 보관해둔다.
+	var grid: Array = []
 	for row in range(GRID_SIZE):
+		var row_plots: Array = []
 		for col in range(GRID_SIZE):
-			var plot: Node2D = FarmPlotScene.instantiate()
+			var plot: FarmPlot = FarmPlotScene.instantiate()
 			plot.position = origin + Vector2(col * TILE_SIZE, row * TILE_SIZE)
 			farm_grid.add_child(plot)
+			row_plots.append(plot)
+		grid.append(row_plots)
+
+	# 흙 스프라이트가 이웃 밭과 이어진 것처럼 보이려면(FarmPlot의 TILLED 연결 표현) 각
+	# 플롯이 자기 상하좌우 이웃을 알아야 한다. 그리드 가장자리는 없는 방향에 null을 넣는다.
+	for row in range(GRID_SIZE):
+		for col in range(GRID_SIZE):
+			var plot: FarmPlot = grid[row][col]
+			var up: FarmPlot = grid[row - 1][col] if row > 0 else null
+			var down: FarmPlot = grid[row + 1][col] if row < GRID_SIZE - 1 else null
+			var left: FarmPlot = grid[row][col - 1] if col > 0 else null
+			var right: FarmPlot = grid[row][col + 1] if col < GRID_SIZE - 1 else null
+			plot.set_neighbors(up, down, left, right)
 
 
 func _on_new_day(day_number: int) -> void:

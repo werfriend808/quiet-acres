@@ -1,0 +1,21 @@
+[gd_scene load_steps=3 format=3]
+
+[ext_resource type="Script" path="res://scripts/pet_chomp.gd" id="1"]
+[ext_resource type="Texture2D" path="res://assets/chomp/chomp_idle_pink.png" id="2"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_1"]
+atlas = ExtResource("2")
+region = Rect2(0, 0, 32, 32)
+
+[node name="PetChompPink" type="Node2D"]
+script = ExtResource("1")
+flock_group = "chomp"
+wander_move_speed = 42.0
+wander_radius = 45.0
+idle_min_duration = 1.5
+idle_max_duration = 3.5
+
+[node name="Visual" type="Sprite2D" parent="."]
+texture_filter = 1
+scale = Vector2(1.4, 1.4)
+texture = SubResource("AtlasTexture_1")

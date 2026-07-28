@@ -6,11 +6,15 @@ const INTERACT_RANGE: float = 40.0
 # M5: 걷는 동안 살짝 위아래로 흔들리는 걷기 애니메이션용 상수/상태.
 const WALK_BOB_AMPLITUDE: float = 2.5
 const WALK_BOB_SPEED: float = 10.0
-const BASE_VISUAL_Y: float = -16.0
+const BASE_VISUAL_Y: float = 0.0
 
-@onready var visual: ColorRect = $Visual
+@onready var visual: Sprite2D = $Visual
 
 var _walk_time: float = 0.0
+
+
+func _ready() -> void:
+	add_to_group("player")
 
 
 func _physics_process(delta: float) -> void:

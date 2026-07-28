@@ -18,7 +18,9 @@ class_name Interactable
 
 var _bob_time: float = 0.0
 var _base_visual_y: float = 0.0
-var _visual: Node2D = null
+# "Visual" 자식 노드는 프로젝트 안에서 ColorRect(Control 계열)일 수도, Sprite2D(Node2D 계열)일
+# 수도 있어서 타입을 고정하지 않는다 (둘 다 .position 프로퍼티는 갖고 있어서 동적으로 동작함).
+var _visual = null
 
 
 func _ready() -> void:
@@ -27,6 +29,9 @@ func _ready() -> void:
 	_visual = get_node_or_null("Visual")
 	if _visual:
 		_base_visual_y = _visual.position.y
+		# 전부 0에서 동시에 시작하면 같은 프레임에 태어난 캐릭터들이 똑같이 박자를
+		# 맞춰 흔들리는 것처럼 보인다. 위상을 무작위로 어긋나게 해서 개별성을 준다.
+		_bob_time = randf_range(0.0, TAU)
 
 
 func _process(delta: float) -> void:

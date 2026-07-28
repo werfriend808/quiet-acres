@@ -46,7 +46,18 @@ const SEEDS: Dictionary = {
 # 심은 직후(씨앗) / 물 준 뒤(성장 중) 단계는 작물 종류와 무관하게 공용 스프라이트를 쓴다.
 const PLANTED_SPRITE_COORD: Array = [4, 0]
 const WATERED_SPRITE_COORD: Array = [4, 2]
-const TILLED_SPRITE_COORD: Array = [0, 4]
+
+## TILLED(갈아엎었지만 아직 안 심은) 상태의 흙 스프라이트.
+## assets/tileset/tilled_dirt_synth.png는 좌/우/위/아래 이웃이 갈려있는지(4비트, 16가지 조합)에
+## 딱 맞는 조각을 미리 합성해둔 4x4 시트라서, 회전 없이 조합 그대로 좌표를 찾아 쓰면 된다.
+## (기존엔 캡/중간/독립 3조각 + 회전으로 흉내냈는데 코너·T자에서 이음새가 보여서 교체함)
+const TILLED_DIRT_SHEET_PATH: String = "res://assets/tileset/tilled_dirt_synth.png"
+
+## 시트를 만들 때 쓴 규칙과 반드시 동일해야 한다: index = left*1 + right*2 + up*4 + down*8,
+## 4x4 시트에서 col = index % 4, row = index / 4.
+static func get_tilled_dirt_coord(left: bool, right: bool, up: bool, down: bool) -> Array:
+	var index: int = (1 if left else 0) + (2 if right else 0) + (4 if up else 0) + (8 if down else 0)
+	return [index % 4, index / 4]
 
 
 ## crop_name을 season_name 계절에 심을 수 있는지 여부

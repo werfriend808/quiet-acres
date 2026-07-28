@@ -19,10 +19,18 @@ const GROWTH_BAR_WIDTH: float = 40.0
 const TILE_PX: int = 16
 
 const TILESET_TEXTURE: Texture2D = preload("res://assets/tileset/tilemap_packed.png")
+const TILLED_DIRT_TEXTURE: Texture2D = preload("res://assets/tileset/tilled_dirt_synth.png")
 
 var state: int = State.GRASS
 var grow_timer: float = 0.0
 var planted_crop: String = ""
+
+# 상하좌우 이웃 밭 (없으면 null). main.gd가 그리드를 만든 직후 set_neighbors()로 채워준다.
+# TILLED 상태일 때 흙 스프라이트가 이웃과 이어진 것처럼 보이게 하는 데 쓰인다.
+var neighbor_up: FarmPlot = null
+var neighbor_down: FarmPlot = null
+var neighbor_left: FarmPlot = null
+var neighbor_right: FarmPlot = null
 
 @onready var visual: ColorRect = $Visual
 @onready var growth_bar: ColorRect = $GrowthBar
@@ -61,6 +69,10 @@ func interact() -> String:
 			state = State.TILLED
 			_update_visual()
 			_play_action_pulse()
+			# 이 밭이 이제 막 "갈아엎어진 상태(worked)"가 됐으니, 이웃 밭들이 이 밭과 이어지는
+			# 모양으로 자기 흙 스프라이트를 다시 골라야 한다. (심기/물주기/수확은 계속 worked
+			# 상태를 유지하는 전이라 이웃의 연결 모양이 바뀌지 않으므로 알릴 필요 없음)
+			_notify_neighbors_of_till()
 			return "밭을 갈았다."
 		State.TILLED:
 			var crop_name: String = GameManager.selected_crop
@@ -106,7 +118,7 @@ func _update_visual() -> void:
 			crop_sprite.visible = false
 		State.TILLED:
 			visual.color = Color(0.45, 0.32, 0.16)
-			_set_crop_sprite(CropData.TILLED_SPRITE_COORD)
+			_update_tilled_dirt_sprite()
 		State.PLANTED:
 			visual.color = Color(0.5, 0.38, 0.18)
 			_set_crop_sprite(CropData.PLANTED_SPRITE_COORD)
@@ -120,13 +132,56 @@ func _update_visual() -> void:
 			_set_crop_sprite(coord)
 
 
-## coord = [col, row] (타일셋 좌표, tilemap_packed.png 기준 16px 단위)에 해당하는
-## 영역을 CropSprite에 표시한다.
-func _set_crop_sprite(coord: Array) -> void:
+## coord = [col, row] (16px 단위)에 해당하는 영역을 CropSprite에 표시한다.
+## texture를 생략하면 기본 타일셋(작물 아이콘용)을 쓰고, TILLED 흙 타일을 그릴 때만
+## TILLED_DIRT_TEXTURE를 명시적으로 넘긴다. rotation_deg은 이제 항상 0 — 새 흙 스프라이트
+## 시트(tilled_dirt_synth.png)는 이웃 조합별로 조각이 이미 다 따로 있어서 회전이 필요 없다.
+func _set_crop_sprite(coord: Array, rotation_deg: float = 0.0, texture: Texture2D = TILESET_TEXTURE) -> void:
 	var col: int = coord[0]
 	var row: int = coord[1]
+	_atlas_texture.atlas = texture
 	_atlas_texture.region = Rect2(col * TILE_PX, row * TILE_PX, TILE_PX, TILE_PX)
+	crop_sprite.rotation_degrees = rotation_deg
 	crop_sprite.visible = true
+
+
+## 상하좌우 이웃 중 "갈려있는(worked, GRASS가 아닌)" 밭이 있으면 그쪽으로 이어지는 것처럼
+## 보이도록 흙 스프라이트를 고른다. tilled_dirt_synth.png는 좌/우/위/아래 열림 여부
+## 16가지 조합에 대응하는 조각을 전부 미리 갖고 있어서(CropData.get_tilled_dirt_coord),
+## 예전처럼 3조각 + 회전으로 흉내낼 필요 없이 조합에 맞는 조각을 바로 골라 쓰면 된다.
+func _update_tilled_dirt_sprite() -> void:
+	var left: bool = _is_worked(neighbor_left)
+	var right: bool = _is_worked(neighbor_right)
+	var up: bool = _is_worked(neighbor_up)
+	var down: bool = _is_worked(neighbor_down)
+	var coord: Array = CropData.get_tilled_dirt_coord(left, right, up, down)
+	_set_crop_sprite(coord, 0.0, TILLED_DIRT_TEXTURE)
+
+
+## n(이웃 밭)이 존재하고 GRASS가 아니면(=한 번이라도 갈아엎어졌으면) "이어질 수 있는" 밭으로 본다.
+func _is_worked(n: FarmPlot) -> bool:
+	return n != null and n.state != State.GRASS
+
+
+func set_neighbors(up: FarmPlot, down: FarmPlot, left: FarmPlot, right: FarmPlot) -> void:
+	neighbor_up = up
+	neighbor_down = down
+	neighbor_left = left
+	neighbor_right = right
+
+
+## 이웃이 이 밭을 갈아서 self.state가 GRASS→TILLED로 바뀌었을 때만 호출된다(그 뒤로는
+## worked 여부가 안 바뀌므로 이웃의 연결 모양이 달라질 일이 없음). 자신이 TILLED 상태일
+## 때만 다시 그려서, 이미 심어서 크롭 아이콘을 보여주는 이웃까지 건드리지 않는다.
+func refresh_connection_visual() -> void:
+	if state == State.TILLED:
+		_update_tilled_dirt_sprite()
+
+
+func _notify_neighbors_of_till() -> void:
+	for n in [neighbor_up, neighbor_down, neighbor_left, neighbor_right]:
+		if n != null:
+			n.refresh_connection_visual()
 
 
 ## 행동이 성공했을 때 타일이 살짝 커졌다 원래 크기로 돌아오는 손맛 연출

@@ -200,6 +200,11 @@ func load_game() -> bool:
 	var plots: Array = get_tree().get_nodes_in_group("farm_plot")
 	for i in range(min(plots.size(), plots_data.size())):
 		plots[i].load_save_state(plots_data[i])
+	# load_save_state는 플롯을 순서대로 하나씩 복원하기 때문에, 어떤 플롯을 복원하는 시점에는
+	# 아직 로드 전이라 기본값(GRASS)인 이웃이 있을 수 있다. 전부 다 복원한 뒤에 한 번 더
+	# TILLED 플롯들의 흙 스프라이트(이웃 연결 모양)를 다시 계산해줘야 정확하다.
+	for plot in plots:
+		plot.refresh_connection_visual()
 
 	inventory_changed.emit()
 	gold_changed.emit()

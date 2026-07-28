@@ -9,6 +9,7 @@ region = Rect2(0, 0, 32, 32)
 
 [node name="PetChomp" type="Node2D"]
 script = ExtResource("1")
+flock_group = "chomp"
 
 [node name="Visual" type="Sprite2D" parent="."]
 texture_filter = 1
