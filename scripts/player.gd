@@ -34,6 +34,19 @@ func _unhandled_input(event: InputEvent) -> void:
 
 	var shop_ui: ShopUI = get_tree().get_first_node_in_group("shop_ui") as ShopUI
 	var shop_open: bool = shop_ui != null and shop_ui.visible
+	var dialogue_ui: DialogueUI = get_tree().get_first_node_in_group("dialogue_ui") as DialogueUI
+	var dialogue_open: bool = dialogue_ui != null and dialogue_ui.visible
+
+	if event.physical_keycode == KEY_ESCAPE:
+		if shop_open:
+			shop_ui.toggle()
+		elif dialogue_open:
+			dialogue_ui.close()
+		return
+
+	# 대화 중에는 ESC 외 다른 단축키를 무시한다 (씨앗 변경/저장 등 오작동 방지).
+	if dialogue_open:
+		return
 
 	var seed_names: Array = CropData.SEEDS.keys()
 	for i in range(seed_names.size()):
@@ -55,10 +68,6 @@ func _unhandled_input(event: InputEvent) -> void:
 			print("작물을 팔아 %d 골드를 벌었다." % earned)
 		else:
 			print("팔 작물이 없다.")
-		return
-
-	if shop_open and event.physical_keycode == KEY_ESCAPE:
-		shop_ui.toggle()
 		return
 
 	if event.physical_keycode == KEY_K:
@@ -90,4 +99,5 @@ func _try_interact() -> void:
 			nearest = interactable
 	if nearest:
 		var message: String = nearest.interact()
-		print(message)
+		if message != "":
+			print(message)

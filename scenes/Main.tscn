@@ -1,9 +1,12 @@
-[gd_scene load_steps=5 format=3]
+[gd_scene load_steps=8 format=3]
 
 [ext_resource type="Script" path="res://scripts/main.gd" id="1"]
 [ext_resource type="PackedScene" path="res://scenes/Player.tscn" id="2"]
 [ext_resource type="PackedScene" path="res://scenes/ShopNPC.tscn" id="3"]
 [ext_resource type="PackedScene" path="res://scenes/ShopUI.tscn" id="4"]
+[ext_resource type="PackedScene" path="res://scenes/VillagerMina.tscn" id="5"]
+[ext_resource type="PackedScene" path="res://scenes/VillagerTheo.tscn" id="6"]
+[ext_resource type="PackedScene" path="res://scenes/DialogueUI.tscn" id="7"]
 
 [node name="Main" type="Node2D"]
 script = ExtResource("1")
@@ -18,13 +21,21 @@ position = Vector2(170, 0)
 
 [node name="ShopUI" parent="." instance=ExtResource("4")]
 
+[node name="VillagerMina" parent="." instance=ExtResource("5")]
+position = Vector2(-170, 0)
+
+[node name="VillagerTheo" parent="." instance=ExtResource("6")]
+position = Vector2(0, -170)
+
+[node name="DialogueUI" parent="." instance=ExtResource("7")]
+
 [node name="HUD" type="CanvasLayer" parent="."]
 
 [node name="InfoLabel" type="Label" parent="HUD"]
 offset_left = 16.0
 offset_top = 16.0
 offset_right = 620.0
-offset_bottom = 260.0
+offset_bottom = 280.0
 theme_override_font_sizes/font_size = 18
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 text = "Day 1"
