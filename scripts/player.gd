@@ -3,8 +3,17 @@ extends CharacterBody2D
 const SPEED: float = 140.0
 const INTERACT_RANGE: float = 40.0
 
+# M5: 걷는 동안 살짝 위아래로 흔들리는 걷기 애니메이션용 상수/상태.
+const WALK_BOB_AMPLITUDE: float = 2.5
+const WALK_BOB_SPEED: float = 10.0
+const BASE_VISUAL_Y: float = -16.0
 
-func _physics_process(_delta: float) -> void:
+@onready var visual: ColorRect = $Visual
+
+var _walk_time: float = 0.0
+
+
+func _physics_process(delta: float) -> void:
 	var input_vector := Vector2.ZERO
 	input_vector.x = Input.get_action_strength("ui_right") - Input.get_action_strength("ui_left")
 	input_vector.y = Input.get_action_strength("ui_down") - Input.get_action_strength("ui_up")
@@ -21,9 +30,19 @@ func _physics_process(_delta: float) -> void:
 
 	velocity = input_vector.limit_length(1.0) * SPEED
 	move_and_slide()
+	_update_walk_bob(delta)
 
 	if Input.is_action_just_pressed("ui_accept"):
 		_try_interact()
+
+
+func _update_walk_bob(delta: float) -> void:
+	if velocity.length() > 1.0:
+		_walk_time += delta * WALK_BOB_SPEED
+		visual.position.y = BASE_VISUAL_Y + sin(_walk_time) * WALK_BOB_AMPLITUDE
+	else:
+		_walk_time = 0.0
+		visual.position.y = BASE_VISUAL_Y
 
 
 ## 숫자키/X/ESC/K/L 등 "한 번 눌렀을 때만" 반응해야 하는 입력은 물리 프레임마다

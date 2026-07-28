@@ -39,6 +39,13 @@ position = Vector2(0, -170)
 
 [node name="HUD" type="CanvasLayer" parent="." unique_id=1531471915]
 
+[node name="InfoPanel" type="Panel" parent="HUD"]
+offset_left = 8.0
+offset_top = 8.0
+offset_right = 636.0
+offset_bottom = 288.0
+modulate = Color(1, 1, 1, 0.6)
+
 [node name="InfoLabel" type="Label" parent="HUD" unique_id=1036222500]
 offset_left = 16.0
 offset_top = 16.0

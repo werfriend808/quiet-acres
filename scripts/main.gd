@@ -48,7 +48,9 @@ func _on_season_changed(season_name: String) -> void:
 
 
 func _update_background() -> void:
-	bg_color.color = SEASON_BG_COLORS.get(GameManager.get_season(), Color(0.1, 0.1, 0.1))
+	var target_color: Color = SEASON_BG_COLORS.get(GameManager.get_season(), Color(0.1, 0.1, 0.1))
+	var tween: Tween = create_tween()
+	tween.tween_property(bg_color, "color", target_color, 1.2).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
 
 func _process(_delta: float) -> void:

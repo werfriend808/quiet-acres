@@ -4,6 +4,7 @@ class_name ShopNPC
 ## 상점 NPC. 플레이어가 상호작용하면 ShopUI를 토글한다.
 
 func _ready() -> void:
+	super._ready()
 	add_to_group("npc")
 
 
