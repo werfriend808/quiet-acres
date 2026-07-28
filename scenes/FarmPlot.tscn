@@ -10,6 +10,12 @@ position = Vector2(-22, -22)
 size = Vector2(44, 44)
 color = Color(0.22, 0.55, 0.2, 1)
 
+[node name="CropSprite" type="Sprite2D" parent="."]
+texture_filter = 1
+position = Vector2(0, 0)
+scale = Vector2(2.75, 2.75)
+visible = false
+
 [node name="GrowthBar" type="ColorRect" parent="."]
 position = Vector2(-20, 18)
 size = Vector2(0, 4)
